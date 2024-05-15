@@ -15,6 +15,7 @@ namespace StarterAssets
         public bool jump;
         public bool sprint;
         public bool defense;
+        public bool attack;
 
         [Header("Movement Settings")]
         public bool analogMovement;
@@ -24,9 +25,33 @@ namespace StarterAssets
         public bool cursorInputForLook = true;
 
         [Header("Events")]
-        public UnityEvent onAttack;
+        public UnityEvent onStartAttack;
+        public UnityEvent<bool> onAttack;
+        public UnityEvent onStopAttack;
+
+        public PlayerInput inputs;
 
 #if ENABLE_INPUT_SYSTEM
+
+        private void Awake()
+        {
+            inputs = GetComponent<PlayerInput>();
+        }
+
+        private void Start()
+        {
+            var atkAction = inputs.actions.FindAction("Attack");
+            atkAction.started += OnStartAttack;
+            atkAction.canceled += OnStopAttack;          
+        }
+
+        private void OnDestroy()
+        {
+            var atkAction = inputs.actions.FindAction("Attack");
+            atkAction.started -= OnStartAttack;
+            atkAction.canceled -= OnStopAttack;
+        }
+
         public void OnMove(InputValue value)
         {
             MoveInput(value.Get<Vector2>());
@@ -50,9 +75,19 @@ namespace StarterAssets
             SprintInput(value.isPressed);
         }
 
+        private void OnStartAttack(InputAction.CallbackContext context)
+        {
+            StartAttackInput();
+        }
+
+        private void OnStopAttack(InputAction.CallbackContext context)
+        {
+            StopAttackInput();
+        }
+
         private void OnAttack(InputValue value)
         {
-            AttackInput();
+          
         }
 
         private void OnDefense(InputValue value)
@@ -60,9 +95,7 @@ namespace StarterAssets
             DefenseInput(value.isPressed);
         }
 
-
 #endif
-
 
         public void MoveInput(Vector2 newMoveDirection)
         {
@@ -89,9 +122,16 @@ namespace StarterAssets
             defense = newDefenseState;
         }
 
-        public void AttackInput()
+        public void StartAttackInput()
         {
-            onAttack?.Invoke();
+            attack = true;
+            onStartAttack?.Invoke();
+        }
+
+        public void StopAttackInput()
+        {
+            attack = false; 
+            onStopAttack?.Invoke();
         }
 
         private void OnApplicationFocus(bool hasFocus)

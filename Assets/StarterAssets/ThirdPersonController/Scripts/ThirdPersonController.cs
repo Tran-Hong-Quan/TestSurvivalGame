@@ -112,6 +112,8 @@ namespace StarterAssets
         private int _animIDMotionSpeed;
         private int _animIDAttack;
         private int _animIDDefense;
+        private int _animIDSwordShieldDefend;
+        private int _animIDIdle;
 
 #if ENABLE_INPUT_SYSTEM 
         private PlayerInput _playerInput;
@@ -127,6 +129,7 @@ namespace StarterAssets
 
         private bool _hasAnimator;
         private bool rotateWithCam;
+        private bool lockRotation;
 
         private bool IsCurrentDeviceMouse
         {
@@ -189,8 +192,8 @@ namespace StarterAssets
             JumpAndGravity();
             GroundedCheck();
             Move();
-            Defense();
             UpdateAimObject();
+            Attack();
         }
 
         private void LateUpdate()
@@ -204,14 +207,19 @@ namespace StarterAssets
                 CinemachineCameraTarget.transform.forward * 10;
         }
 
-        private void Defense()
+        private void PlayAttackAnimation()
         {
-            _animator.SetBool(_animIDDefense, _input.defense);
+            _animator.Play("Attack01_SwordAndShiled", 1, 0);
         }
 
-        private void AttackAnimation()
+        private void Attack()
         {
-            _animator.SetTrigger(_animIDAttack);
+            _animator.SetBool(_animIDAttack, _input.attack);
+        }
+
+        private void AttackAnimation(bool newAttackState)
+        {
+            _animator.SetBool(_animIDAttack, newAttackState);
         }
 
         private void CheckHitAttack()
@@ -230,6 +238,7 @@ namespace StarterAssets
         {
             _input.onAttack.AddListener(AttackAnimation);
             _animationEventsHandler.onMeleeAttack.AddListener(CheckHitAttack);
+            _input.onStartAttack.AddListener(PlayAttackAnimation);
         }
 
         private void AssignAnimationIDs()
@@ -241,6 +250,8 @@ namespace StarterAssets
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
             _animIDAttack = Animator.StringToHash("Attack");
             _animIDDefense = Animator.StringToHash("Defense");
+            _animIDSwordShieldDefend = Animator.StringToHash("SwordShieldDefend");
+            _animIDIdle = Animator.StringToHash("Idle");
         }
 
         private void GroundedCheck()
@@ -283,7 +294,8 @@ namespace StarterAssets
         private void Move()
         {
             // set target speed based on move speed, sprint speed and if sprint is pressed
-            float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+            float targetSpeed = !_input.sprint ? SprintSpeed : MoveSpeed;
+            _animator.SetBool(_animIDDefense,_input.sprint);
 
             // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
@@ -329,8 +341,9 @@ namespace StarterAssets
                 float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
                     RotationSmoothTime);
 
-                // rotate to face input direction relative to camera position
-                //transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+                //rotate to face input direction relative to camera position
+                if (!rotateWithCam)
+                    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
             }
 
 
@@ -347,9 +360,10 @@ namespace StarterAssets
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
             }
 
-            transform.rotation = Quaternion.Euler(0,
-               Mathf.LerpAngle(transform.rotation.eulerAngles.y, _cinemachineTargetYaw, RotateSpeed * Time.deltaTime),
-                0);
+            if (rotateWithCam)
+                transform.rotation = Quaternion.Euler(0,
+                   Mathf.LerpAngle(transform.rotation.eulerAngles.y, _cinemachineTargetYaw, RotateSpeed * Time.deltaTime),
+                    0);
         }
 
         private void JumpAndGravity()
