@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18277237, g: 0.22847687, b: 0.30703562, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -311,6 +311,30 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3527455994468063546, guid: b419e164ab53516438da636332342da9, type: 3}
   m_PrefabInstance: {fileID: 1047631205}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &216438312 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6825763076235687243, guid: b419e164ab53516438da636332342da9, type: 3}
+  m_PrefabInstance: {fileID: 1047631205}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &216438316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 216438312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bff4f5a8991d7fa47baed5c5ff25979f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 20a08f7818043804f91bf2af210532a4, type: 2}
+  duration: 0.1
+  corner: 1
+  loop: 0
+  points:
+  - {x: 0, y: 0.26738393, z: 0}
+  - {x: 0, y: 1.1496851, z: 0}
 --- !u!4 &216526548 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6593357105455697216, guid: b419e164ab53516438da636332342da9, type: 3}
@@ -1046,6 +1070,9 @@ MonoBehaviour:
       m_Calls: []
   healthTeamSide: 2
   maxHealth: 50
+  attackRange: 3
+  target: {fileID: 3893294198452640995}
+  bullet: {fileID: 0}
 --- !u!114 &914435377
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1114,7 +1141,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 3
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -1122,10 +1149,22 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 1.5
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 3
+--- !u!114 &914435383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 914435373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2840fe292ff0cfd4590826bf28a0f1ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &931591677 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8091509650015934395, guid: b419e164ab53516438da636332342da9, type: 3}
@@ -1241,7 +1280,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7224149203388998861, guid: b419e164ab53516438da636332342da9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8338988566585442053}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6825763076235687243, guid: b419e164ab53516438da636332342da9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 216438316}
   m_SourcePrefab: {fileID: 100100000, guid: b419e164ab53516438da636332342da9, type: 3}
 --- !u!4 &1053516004 stripped
 Transform:
@@ -2324,6 +2366,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 870191145766204325, guid: c56a12731e8250747a296b61a25e07ce, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 2edd27ad069c4b940b746a079856a11d, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2343,6 +2389,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 59360354102331270, guid: c56a12731e8250747a296b61a25e07ce, type: 3}
       insertIndex: -1
       addedObject: {fileID: 914435380}
+    - targetCorrespondingSourceObject: {fileID: 59360354102331270, guid: c56a12731e8250747a296b61a25e07ce, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 914435383}
   m_SourcePrefab: {fileID: 100100000, guid: c56a12731e8250747a296b61a25e07ce, type: 3}
 --- !u!4 &2054689408 stripped
 Transform:
@@ -2470,8 +2519,8 @@ MonoBehaviour:
   CameraAngleOverride: 0
   LockCameraPosition: 0
   aimObj: {fileID: 1624459739}
-  healthTeamSide: 0
-  maxHealth: 0
+  healthTeamSide: 1
+  maxHealth: 100
   attackRange: 0.67
   attackCenter: {x: 0.94, y: 0.74}
   attackDamge: 40
@@ -2865,9 +2914,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2840fe292ff0cfd4590826bf28a0f1ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onMeleeAttack:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &8338988566585442050
 GameObject:
   m_ObjectHideFlags: 0

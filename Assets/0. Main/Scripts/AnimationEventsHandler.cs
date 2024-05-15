@@ -5,9 +5,18 @@ using UnityEngine.Events;
 
 public class AnimationEventsHandler : MonoBehaviour
 {
-    public UnityEvent onMeleeAttack;
-    private void OnAnimationMeleeAttack()
+    private void MeleeAttack()
     {
-        onMeleeAttack?.Invoke();
+        SendMessage("OnAnimationMeleeAttack", SendMessageOptions.DontRequireReceiver);
+    }
+
+    private void FootStep()
+    {
+        SendMessage("OnFoodStep", SendMessageOptions.DontRequireReceiver);
+    }
+
+    private void RangeAttack()
+    {
+        SendMessage("OnAnimationRangeAttack", SendMessageOptions.DontRequireReceiver);
     }
 }

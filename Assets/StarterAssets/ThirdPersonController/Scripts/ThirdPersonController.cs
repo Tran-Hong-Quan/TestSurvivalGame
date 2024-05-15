@@ -207,22 +207,15 @@ namespace StarterAssets
                 CinemachineCameraTarget.transform.forward * 10;
         }
 
-        private void PlayAttackAnimation()
-        {
-            _animator.Play("Attack01_SwordAndShiled", 1, 0);
-        }
-
         private void Attack()
         {
+            if (_input.sprint) return;
             _animator.SetBool(_animIDAttack, _input.attack);
+            if (_input.attack && !_animator.GetBool("Attacking"))
+                _animator.Play("Attack01_SwordAndShiled", 1, 0);
         }
 
-        private void AttackAnimation(bool newAttackState)
-        {
-            _animator.SetBool(_animIDAttack, newAttackState);
-        }
-
-        private void CheckHitAttack()
+        private void OnAnimationMeleeAttack()
         {
             var cols = Physics.OverlapSphere(transform.position +
             transform.forward * attackCenter.x + new Vector3(0, attackCenter.y), attackRange);
@@ -236,9 +229,7 @@ namespace StarterAssets
 
         private void AssignEvents()
         {
-            _input.onAttack.AddListener(AttackAnimation);
-            _animationEventsHandler.onMeleeAttack.AddListener(CheckHitAttack);
-            _input.onStartAttack.AddListener(PlayAttackAnimation);
+
         }
 
         private void AssignAnimationIDs()
@@ -295,7 +286,7 @@ namespace StarterAssets
         {
             // set target speed based on move speed, sprint speed and if sprint is pressed
             float targetSpeed = !_input.sprint ? SprintSpeed : MoveSpeed;
-            _animator.SetBool(_animIDDefense,_input.sprint);
+            _animator.SetBool(_animIDDefense, _input.sprint);
 
             // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
@@ -462,7 +453,7 @@ namespace StarterAssets
                 attackRange);
         }
 
-        private void OnFootstep(AnimationEvent animationEvent)
+        private void OnFoodStep(AnimationEvent animationEvent)
         {
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
