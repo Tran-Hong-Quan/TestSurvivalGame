@@ -1,13 +1,18 @@
+using QuanUtilities;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class Enemy : Entity, IHealth
 {
     [Header("Health")]
     [SerializeField] private HealthTeamSide healthTeamSide;
     [SerializeField] private float maxHealth;
+    [SerializeField] ParticleSystem dieEffect;
+    [SerializeField] GameObject healthBar;
+    [SerializeField] Image currentHealthBar;
 
     [Header("Attack")]
     [SerializeField] private float attackRange = 3f;
@@ -28,39 +33,72 @@ public class Enemy : Entity, IHealth
     public float MaxHealth => maxHealth;
     public float CurrentHealth => currentHealth;
 
-    private int aimIDAttack;
+    private int animIDAttack;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
 
-        maxHealth = currentHealth;
+        animIDAttack = Animator.StringToHash("Attack");
         sprRange = agent.stoppingDistance * agent.stoppingDistance;
 
-        aimIDAttack = Animator.StringToHash("Attack");
-
         agent.updateRotation = false;
+        Init();
     }
 
+    public void Init()
+    {
+        currentHealth = maxHealth;
+        currentHealthBar.fillAmount = 1;
+        healthBar.SetActive(false);
+    }
+
+    Coroutine offHealthBar;
     public void TakeDamge(float damage, HealthEventHandler evt)
     {
+        print("Health = " + currentHealth + " ,damage = " + damage);
         currentHealth -= damage;
         if (currentHealth < 0)
         {
             print("Die");
+            Die();
             onDie?.Invoke(this);
+            return;
         }
+
+        healthBar.gameObject.SetActive(true);
+        if (offHealthBar != null) StopCoroutine(offHealthBar);
+        offHealthBar = this.DelayFunction(1, () => healthBar.gameObject.SetActive(false));
+        currentHealthBar.fillAmount = currentHealth / maxHealth;
+    }
+
+    private void Die()
+    {
+        var e = SimplePool.Spawn(dieEffect);
+        e.transform.position = transform.position + Vector3.up;
+        e.Play();
+        SimplePool.Despawn(gameObject);
     }
 
     public void Regeneration(float regeneration, HealthEventHandler evt)
     {
         currentHealth += regeneration;
+        healthBar.gameObject.SetActive(true);
+        if (offHealthBar != null) StopCoroutine(offHealthBar);
+        offHealthBar = this.DelayFunction(1, () => healthBar.gameObject.SetActive(false));
+        currentHealthBar.fillAmount = currentHealth / maxHealth;
     }
 
     float sprRange;
     private void Update()
     {
+        if (target == null)
+        {
+            animator.SetBool(animIDAttack, false);
+            return;
+        }
+
         SetDesitination(target.position);
 
         Vector3 direction = (target.position - transform.position).normalized;
@@ -74,11 +112,11 @@ public class Enemy : Entity, IHealth
 
         if ((target.position - transform.position).sqrMagnitude < sprRange)
         {
-            animator.SetBool(aimIDAttack, true);
+            animator.SetBool(animIDAttack, true);
         }
         else
         {
-            animator.SetBool(aimIDAttack, false);
+            animator.SetBool(animIDAttack, false);
         }
 
         //print(agent.isStopped);
@@ -92,7 +130,8 @@ public class Enemy : Entity, IHealth
     private void OnAnimationRangeAttack()
     {
         var b = SimplePool.Spawn(bullet);
+        if (!b) return;
         b.transform.position = firePos.position;
-        b.Init(10, (target.position - transform.position).normalized, bulletDamage);
+        b.Init(10, (target.position - transform.position).normalized, bulletDamage, 10, gameObject);
     }
 }

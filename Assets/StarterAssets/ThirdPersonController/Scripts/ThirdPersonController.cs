@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 #endif
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -86,6 +87,9 @@ namespace StarterAssets
         [SerializeField] float attackRange = 1;
         [SerializeField] Vector2 attackCenter = Vector2.one;
         [SerializeField] float attackDamge = 10;
+
+        [Header("UI")]
+        [SerializeField] Image healthBar;
 
         // cinemachine
         private float _cinemachineTargetYaw;
@@ -476,11 +480,25 @@ namespace StarterAssets
         public void TakeDamge(float damage, HealthEventHandler evt)
         {
             currentHealth -= damage;
+
+            if(currentHealth <= 0)
+            {
+                onDie?.Invoke(this);
+                Die();
+                healthBar.fillAmount = 0;
+            }
+            healthBar.fillAmount = currentHealth / maxHealth;
+        }
+
+        private void Die()
+        {
+            Destroy(gameObject);
         }
 
         public void Regeneration(float regeneration, HealthEventHandler evt)
         {
             currentHealth += regeneration;
+            healthBar.fillAmount = currentHealth / maxHealth;
         }
 
         private void OnAttackAnimation()

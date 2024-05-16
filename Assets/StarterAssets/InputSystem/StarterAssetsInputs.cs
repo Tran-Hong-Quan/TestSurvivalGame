@@ -88,7 +88,7 @@ namespace StarterAssets
 
         private void OnAttack(InputValue value)
         {
-          
+            
         }
 
         private void OnDefense(InputValue value)
@@ -125,14 +125,19 @@ namespace StarterAssets
 
         public void StartAttackInput()
         {
-            attack = true;
+            AttackInput(true);
             onStartAttack?.Invoke();
         }
 
         public void StopAttackInput()
         {
-            attack = false; 
+            AttackInput(false);
             onStopAttack?.Invoke();
+        }
+
+        public void AttackInput(bool newAttackIputState)
+        {
+            attack = newAttackIputState;
         }
 
         private void OnApplicationFocus(bool hasFocus)

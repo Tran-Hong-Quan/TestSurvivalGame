@@ -9685,7 +9685,7 @@ GameObject:
   - component: {fileID: 518405369741771021}
   - component: {fileID: 433291158512277373}
   - component: {fileID: 6430327981526841977}
-  - component: {fileID: 748461737206581454}
+  - component: {fileID: 877700400000449062}
   m_Layer: 0
   m_Name: Fire_Explosion
   m_TagString: Untagged
@@ -14548,7 +14548,7 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!114 &748461737206581454
+--- !u!114 &877700400000449062
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -14557,7 +14557,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2448217794849139778}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7b777e04ac0bfb40a14dcc6cbecd737, type: 3}
+  m_Script: {fileID: 11500000, guid: 5fc956aeb771d16479878bc7cf1ec7f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2580114981461462503

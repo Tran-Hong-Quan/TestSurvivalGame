@@ -1,3 +1,4 @@
+using QuanUtilities;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,11 +11,18 @@ public class Bullet : MonoBehaviour
 
     [SerializeField] ParticleSystem hitEff;
     [SerializeField] HealthTeamSide teamSide;
-    public void Init(float speed, Vector3 direction, float damage)
+
+    GameObject caller;
+
+    public void Init(float speed, Vector3 direction, float damage, float timeToLive = 10, GameObject caller = null,float callerRemvomeDelay = 1)
     {
         this.speed = speed;
         this.direction = direction;
         this.damage = damage;
+
+        this.DelayFunction(timeToLive, () => SimplePool.Despawn(gameObject));
+        this.caller = caller;
+        this.DelayFunction(callerRemvomeDelay, () => caller = null);
     }
 
     private void Update()
@@ -24,18 +32,30 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        print("Hit to " + other.name);
+        CheckHit(other);
+    }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        CheckHit(collision.collider);
+    }
+
+    private void CheckHit(Collider collider)
+    {
+        print("Hit to" + collider.name);
+
+        if (collider.gameObject == caller) return;
         var e = SimplePool.Spawn(hitEff);
         e.transform.position = transform.position;
         e.Play();
-        e.gameObject.SendMessage("InitAutoDespawn", e.main.duration);
-        SimplePool.Despawn(gameObject);
 
-        if (other.TryGetComponent(out IHealth enemy))
+        if (collider.TryGetComponent(out IHealth enemy))
         {
-            if (enemy.HealthTeamSide == teamSide) return;
-            enemy.TakeDamge(damage, new HealthEventHandler(gameObject, teamSide));
+            if (enemy.HealthTeamSide != teamSide || teamSide == HealthTeamSide.None)
+            {
+                enemy.TakeDamge(damage, new HealthEventHandler(gameObject, teamSide));
+            }
         }
+        SimplePool.Despawn(gameObject);
     }
 }
