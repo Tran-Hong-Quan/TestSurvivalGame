@@ -44,6 +44,7 @@ namespace StarterAssets
             atkAction.started += OnStartAttack;
             atkAction.canceled += OnStopAttack;          
         }
+        
 
         private void OnDestroy()
         {

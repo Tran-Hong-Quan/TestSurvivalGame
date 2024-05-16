@@ -453,7 +453,7 @@ namespace StarterAssets
                 attackRange);
         }
 
-        private void OnFoodStep(AnimationEvent animationEvent)
+        private void OnFootstep(AnimationEvent animationEvent)
         {
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
